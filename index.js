@@ -4,6 +4,7 @@ const { connectDB } = require("./src/config/db");
 const booksRouter = require("./src/api/routes/books");
 const usersRoutes = require("./src/api/routes/users");
 const usersRouter = require("./src/api/routes/users");
+const cors = require("cors");
 
 // Configurar librería dotenv para poder trabajar con variables de entorno
 require("dotenv").config();
@@ -13,6 +14,9 @@ const app = express();
 
 // Definir puerto de escucha
 const port = 3000;
+
+// Indicar al servidor que se permiten peticiones
+app.use(cors());
 
 // Indicar al servidor que puede recibir cuerpos en formato json
 app.use(express.json());

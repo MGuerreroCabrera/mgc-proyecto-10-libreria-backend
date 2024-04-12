@@ -1,4 +1,4 @@
-const { isAuth } = require("../../middlewares/auth");
+const { isAuth, isAdmin } = require("../../middlewares/auth");
 const { getBooks, getBookById, postBook, putBook, deleteBook } = require("../controllers/books");
 
 // Importar librería express con el método Router
@@ -11,13 +11,14 @@ booksRouter.get("/:id", isAuth, getBookById);
 booksRouter.get("/", getBooks);
 
 // Ruta para insertar registro
-booksRouter.post("/", isAuth, postBook);
+//booksRouter.post("/", isAuth, postBook);
+booksRouter.post("/", postBook);
 
 // Ruta para actualizar un registro
 booksRouter.put("/:id", putBook);
 
 // Ruta para eliminar un registro
-booksRouter.delete("/:id", deleteBook);
+booksRouter.delete("/:id", isAdmin, deleteBook);
 
 // Exportar enrutador
 module.exports = booksRouter;

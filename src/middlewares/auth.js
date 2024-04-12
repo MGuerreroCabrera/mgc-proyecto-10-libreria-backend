@@ -1,53 +1,48 @@
 const User = require("../api/models/users");
 const { verifyToken } = require("../utils/jwt");
 
-// Crear función que valida si el usuario está autenticado
-const isAuth = async (req, res, next) => {
+const verifyUser = async (req, res, next, requireAdmin = false) => {
     try {
-        // Recoger el token del req.headers.authorization
+        // Coger el token de la autorización de las headers
         const token = req.headers.authorization;
-        // Limpiar el token. Quitar Bearer 
-        const parsedToken = token.replace("Bearer ", "");
-        // Verificar el token Recoger el id del usuario
-        const { id } = verifyToken(parsedToken);
-        // Obtener datos del usuario
-        const user = await User.findById(id);        
-        // Eliminar el dato password
-        user.password = null;    
-        // Meter los datos del usuario en los datos de la petición
-        req.user = user;
-        // Pasar a lo siguiente
-        next();
-    } catch (error) {
-        return res.status(400).json("Usuario no autorizado");
-    }
-};
-
-// Crear función que el usuario es Administrador
-const isAdmin = async (req, res, next) => {
-    try {
-        // Recoger el token del usuario
-        const token = req.headers.authorization;
-        // Limpiar token y quitar Bearer
-        const parsedToken = token.replace("Bearer ", "");
-        // Verificar el token y recoger el id del usuario
-        const { id } = verifyToken(parsedToken);
-        // Obtener datos del usuario
-        const user = await User.findById(id);
-        // Comprobar el rol del usuario
-        if(user.rol !== "admin"){
-            return res.status(400).json("Operación permitida únicamente a Administradores");
+        // Si no hay token no está autorizado
+        if(!token){
+            return res.status(400).json("Usuario no autorizado ❌");
         }
-        // Inicializar a null la contraseña del usuario
-        user.password = null;
-        // Inyectar datos del usuario en la petición
-        req.user = user;
-        // Pasar a lo siguiente
+        // Parsear el token
+        const parsedToken = token.replace("Bearer ", "");
+        // Obtenermos el id del usuario tras pasar el token parseado por la función verifyJwt
+        //const { id } = verifyJwt(parsedToken);
+        const { id } = verifyToken(parsedToken) ;
+        // Buscar el usuario en la BBDD por su id
+        const userLoged = await User.findById(id);
+        
+        // Si requireAdmin es true y el usuario no es admin, devolver error
+        if(requireAdmin && userLoged.rol !== "admin") {
+            return res.status(400).json("Operación reservada a administradores");
+        }
+        
+        // Poner el password a null
+        userLoged.password = null
+        // Poner los datos del usuario en el cuerpo de la petición
+        req.user = userLoged;
+        // Pasar a lo siguiente que haya que hacer / abrir la puerta
         next();
-
     } catch (error) {
-        return res.status(400).json("Doy error");
+        // Devolver resultado KO y mensaje
+        return res.status(400).json(error);
     }
-};
+}
+
+// Crear función que valida si el usuario es administrador
+const isAdmin = async (req, res, next) => {
+    await verifyUser(req, res, next, true);
+}
+
+// Crear función que valida si el usuario está registrado
+const isAuth = async (req, res, next) => {
+    await verifyUser(req, res, next);
+}
+
 
 module.exports = { isAuth, isAdmin }

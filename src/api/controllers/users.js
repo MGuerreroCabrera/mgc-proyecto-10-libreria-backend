@@ -37,7 +37,7 @@ const register = async (req, res, next) => {
         // Comprobar que la dirección de correo electrónico no exista
         if(userDuplicate) {
             // Devolver resultado OK y error de usuario duplicado
-            return res.status(400).json("La dirección de correo electrónico ya está registrada");
+            return res.status(409).json("La dirección de correo electrónico ya está registrada");
         } 
         // Recoger datos a insertar
         const newUser = new User(req.body);
@@ -97,10 +97,44 @@ const putUser = async (req, res, next) => {
         }
         // Asignar los que tenía como favoritos más los nuevos
         newUser.favorites = [...oldUser.favorites, ...newUser.favorites];
+        console.log(newUser.favorites);
         // Lanzar la orden a la BBDD de actualizar el registro
         const userUpdated = await User.findByIdAndUpdate(id, newUser, { new: true });
         // Devolver resultado OK y registro actualizado
         return res.status(200).json(userUpdated);
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+};
+
+// Eliminar un libro de los favoritos
+const deleteFavorite = async (req, res, next) => {
+    try {
+        // Recoger el id del usuario a modificar
+        const { id } = req.params;
+
+        // Recoger los datos antiguos
+        const oldUser = await User.findById(id);
+        
+        // Recoger el id del libro del body
+        const idBook = req.body.favorites;    
+        
+        // Crear array con los favoritos menos con el libro a eliminar
+        const idx = oldUser.favorites.indexOf(idBook);
+        oldUser.favorites.splice(idx, 1);
+
+        // Crear la variable que contendrá los nuevos datos
+        const newUser = new User(req.body);
+        // Asignar el mismo id al nuevo registro
+        newUser._id = id;
+
+        // Asignar los que tenía como favoritos más los nuevos
+        newUser.favorites = oldUser.favorites;
+        // Lanzar la orden a la BBDD de actualizar el registro
+        const userUpdated = await User.findByIdAndUpdate(id, newUser, { new: true });
+        // Devolver resultado OK y registro actualizado
+        return res.status(200).json(userUpdated);
+        
     } catch (error) {
         return res.status(400).json(error);
     }
@@ -141,4 +175,4 @@ const deleteUser = async (req, res, next) => {
 };
 
 // Exportar métodos
-module.exports = { getUsers, getUserById, register, login, putUser, doAdmin, deleteUser }
+module.exports = { getUsers, getUserById, register, login, putUser, doAdmin, deleteUser, deleteFavorite }
