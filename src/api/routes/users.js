@@ -20,7 +20,7 @@ usersRouter.post("/login", login);
 usersRouter.put("/:id", isAuth, putUser);
 
 // Eliminar libro de favoritos
-usersRouter.put("/delete-favorite/:id", deleteFavorite);
+usersRouter.put("/delete-favorite/:id", isAuth, deleteFavorite);
 
 // Actualizar el usuario a Admin
 usersRouter.put("/do-admin/:id", isAdmin, doAdmin)
