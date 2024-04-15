@@ -107,55 +107,6 @@ const putUser = async (req, res, next) => {
     }
 };
 
-/*
-"favorites": [
-			"6613da5d979cb3d96c66c3c0",
-			"6613ed28ee1f3fa66d867acd",
-			"6613e8947bc0013fe016c9ff",
-			"6613da5d979cb3d96c66c3c0",
-			"6613e9937bc0013fe016ca05",
-			"6613eb17ee1f3fa66d867ac7"
-		]
-*/ 
-
-// Eliminar un libro de los favoritos
-const deleteFavorite = async (req, res, next) => {
-    try {
-        // Recoger el id del usuario a modificar
-        const { id } = req.params;
-
-        // Recoger los datos antiguos
-        const oldUser = await User.findById(id);
-        
-        // Recoger el id del libro del body
-        const idBook = req.body.favorites;            
-        
-        const idx = oldUser.favorites.indexOf(idBook);
-        oldUser.favorites.splice(idx, 1);
-        //const newArray = oldUser.favorites.filter(item => item !== idBook);
-        //return res.status(200).json(oldUser.favorites);
-
-        // Crear array con los favoritos menos con el libro a eliminar
-        /*const idx = oldUser.favorites.indexOf(idBook);
-        oldUser.favorites.splice(idx, 1);
-*/
-        // Crear la variable que contendrá los nuevos datos
-        const newUser = new User(req.body);
-        // Asignar el mismo id al nuevo registro
-        newUser._id = id;
-
-        // Asignar los que tenía como favoritos más los nuevos
-        newUser.favorites = oldUser.favorites;
-        // Lanzar la orden a la BBDD de actualizar el registro
-        const userUpdated = await User.findByIdAndUpdate(id, newUser, { new: true });
-        // Devolver resultado OK y registro actualizado
-        return res.status(200).json(userUpdated);
-        
-    } catch (error) {
-        return res.status(400).json(error);
-    }
-};
-
 // Actualizar registro. Do admin
 const doAdmin = async (req, res, next) => {
     try {
@@ -191,4 +142,4 @@ const deleteUser = async (req, res, next) => {
 };
 
 // Exportar métodos
-module.exports = { getUsers, getUserById, register, login, putUser, doAdmin, deleteUser, deleteFavorite }
+module.exports = { getUsers, getUserById, register, login, putUser, doAdmin, deleteUser }

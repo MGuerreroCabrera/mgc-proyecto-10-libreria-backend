@@ -1,5 +1,5 @@
 const { isAuth, isAdmin } = require("../../middlewares/auth");
-const { getUserById, getUsers, register, login, deleteUser, putUser, doAdmin, deleteFavorite } = require("../controllers/users");
+const { getUserById, getUsers, register, login, deleteUser, putUser, doAdmin } = require("../controllers/users");
 
 // Importar método Router de la librería express
 const usersRouter = require("express").Router();
@@ -18,9 +18,6 @@ usersRouter.post("/login", login);
 
 // Actualizar el usario
 usersRouter.put("/:id", isAuth, putUser);
-
-// Eliminar libro de favoritos
-usersRouter.put("/delete-favorite/:id", isAuth, deleteFavorite);
 
 // Actualizar el usuario a Admin
 usersRouter.put("/do-admin/:id", isAdmin, doAdmin)
