@@ -8,7 +8,8 @@ const bookSchema = new mongoose.Schema(
         cover: { type: String, required: true },
         author: { type: String, required: false, trim: true },
         price: { type: Number, required: true },
-        publishedOn: { type: String, required: false }
+        publishedOn: { type: String, required: false },
+        rating: { type: Number }
     }, 
     {
         timestamps: true,
