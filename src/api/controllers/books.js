@@ -58,6 +58,34 @@ const putBook = async (req, res, next) => {
     }
 };
 
+// Poner puntuación al libro
+const putScore = async (req, res, next) => {
+try {
+    // Obtener el id del libro a actualizar y la puntuación
+        const { id } = req.params;
+        const { rating } = req.body;
+        // Obtener el libro
+        const book = await Book.findById(id);
+        // Comprobar que el libro existe
+        if(!book) {
+            return res.status(400).json(error)
+        }
+        // Sumar el rating al libro
+        book.rating = ((book.rating * book.ratingCounts) + rating) / (book.ratingCounts + 1);
+        book.ratingCounts += 1;
+
+        // Guardar los datos del rating
+        const bookUpdated = await book.save();
+        // Pasar a JSON la respuesta
+        //res.json();
+        return res.status(200).json(bookUpdated);
+        
+        
+    } catch (error) {
+        return res.status(400).json(error);
+    }
+};
+
 // Eliminar registro
 const deleteBook = async (req, res, next) => {
     try {
@@ -73,4 +101,4 @@ const deleteBook = async (req, res, next) => {
 };
 
 // Exportar lo métodos
-module.exports = { getBooks, getBookById, postBook, putBook, deleteBook }
+module.exports = { getBooks, getBookById, postBook, putBook, deleteBook, putScore }

@@ -9,7 +9,8 @@ const bookSchema = new mongoose.Schema(
         author: { type: String, required: false, trim: true },
         price: { type: Number, required: true },
         publishedOn: { type: String, required: false },
-        rating: { type: Number }
+        rating: { type: Number, default: 0 },
+        ratingCounts: { type: Number, default: 0 }
     }, 
     {
         timestamps: true,

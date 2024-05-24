@@ -96,8 +96,7 @@ const putUser = async (req, res, next) => {
             newUser.rol = "user";
         }
         // Asignar los que tenía como favoritos más los nuevos
-        newUser.favorites = [...oldUser.favorites, ...newUser.favorites];
-        console.log(newUser.favorites);
+        newUser.favorites = [...oldUser.favorites, ...newUser.favorites];        
         // Lanzar la orden a la BBDD de actualizar el registro
         const userUpdated = await User.findByIdAndUpdate(id, newUser, { new: true });
         // Devolver resultado OK y registro actualizado
